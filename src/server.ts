@@ -40,12 +40,13 @@ app.get('/filteredimage',  function(req, res) {
   let { image_url } = req.query;
 
   const filteredImage = filterImageFromURL(image_url)
-  .then((filteredUrl) => {
-    res.status(201).send(filteredUrl);
+  .then((filteredpath) => {
+    const filteredImages = [filteredpath]
+    res.status(201).send(filteredpath);
+    deleteLocalFiles(filteredImages)
   })
   .catch((e) => {
-    res.send(404).send("teste");
-
+    res.send(422).send("Error filtering image");
   });
   // Return the articles to the rendering engine
 });
