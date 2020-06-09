@@ -21,16 +21,21 @@ import { Request, Response } from 'express';
 
   app.get('/filteredimage',  function(req: Request, res: Response) {
 
-    // Access the provided 'page' and 'limt' query parameters
     let { image_url } = req.query;
+
+    if (!image_url) {
+      res.status(400).send("Invalid URl");
+    }
 
     const filteredImage = filterImageFromURL(image_url)
     .then((filteredpath:string) => {
 
       const filteredImages:Array<string> = [filteredpath]
       
-      res.status(201).send(filteredpath);
-      deleteLocalFiles(filteredImages)
+      res.status(200).sendFile(filteredpath, (e) => {
+        if (e) return res.status(422).send("Unable to filter image");
+      deleteLocalFiles([filteredpath]);
+      });
     })
     .catch((e) => {
       res.send(422).send("Error filtering image");
